@@ -62,15 +62,15 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     }
   }
 
-  if (is_last_substring) {
-    tmp_writer.close();
-    return;
-  }
-
   // insert next map entry
   itr = container_.begin();
   if (itr != container_.end()) {
     insert(itr->second.first_index, itr->second.data, itr->second.is_last_substring);
+  }
+
+  if (is_last_substring) {
+    tmp_writer.close();
+    return;
   }
 }
 

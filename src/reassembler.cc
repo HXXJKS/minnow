@@ -14,7 +14,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   // storage
   if (first_index > cur_idx) {
     // store all data
-    if (first_index + data.size <= cur_idx + avai_cap) {
+    if (first_index + data.size() <= cur_idx + avai_cap) {
       container_[first_index] = {first_index, data, is_last_substring};
       total_stored_bytes_ += data.size();
     } else // otherwise modify bool
@@ -43,7 +43,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   uint64_t i = 0;
   while (i < avai_cap && i < data.size()) {
     tmp_str += data[i];
-    i++
+    i++;
   }
   tmp_writer.push(tmp_str);
   cur_idx += tmp_str.size();
@@ -59,7 +59,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     if (itr->second.data.size() + itr->second.first_index <= cur_idx) {
       auto next = std::next(itr);
       total_stored_bytes_ -= itr->second.data.size();
-      myMap.erase(itr);
+      container_.erase(itr);
       itr = next;
     } else {
       auto next = std::next(itr);

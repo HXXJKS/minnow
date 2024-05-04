@@ -7,16 +7,16 @@
 
 // define a new struct
 struct reassember_storage_ele {
-  uint64_t first_index;
-  std::string data;
-  bool is_last_substring;
+  uint64_t first_index = 0;
+  std::string data = "";
+  bool is_last_substring = false;
 };
 
 class Reassembler
 {
 public:
   // Construct Reassembler to write into given ByteStream.
-  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ), container_({0, "", false}) {}
+  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ), container_() {}
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.

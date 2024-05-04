@@ -3,72 +3,74 @@
 using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
-{ 
-
-  // preprocess data to remove pushed part
-  if (first_index < cur_idx_) {
-    if (first_index + data.size() <= cur_idx_) {
-      return;
-    }
-
-    string tmp = data.substr(cur_idx_ - first_index);
-    data = tmp;
-    first_index = cur_idx_;
+{
+  Writer& tmp_writer = output_.writer();
+  uint64_t avai_cap = tmp_writer.available_capacity();
+  // discard situation
+  if (first_index >= cur_idx + avai_cap) {
+    return;
   }
 
-  Writer& reassembler_writer_ = output_.writer();
-  uint64_t cur_avai_cap_ = reassembler_writer_.available_capacity();
-  // next bytes
-  if (first_index == cur_idx_) {
-    // if data fit into the available capacity
-    if (data.size() <= cur_avai_cap_) {
-      // push to buffed zone
-      reassembler_writer_.push(data);
-      // update cur_idx
-      cur_idx_ += data.size();
-
-      if (is_last_substring) {
-        reassembler_writer_.close();
-        return;
-      }
-
-      auto itr = container_.begin();
-      // delete map first entry if equal
-      while (itr != container_.end() && itr->first < first_index) {
-
-        total_stored_bytes_ -= itr->second.data.size();
-
-        auto next = std::next(itr);
-
-        // Erase the current element
-        container_.erase(itr);
-
-        // Move to the next element
-        itr = next;
-      }
-
-      // insert next entry
-      itr = container_.begin();
-      if (itr != container_.end()){
-        insert(itr->second.first_index, itr->second.data, itr->second.is_last_substring);
-      }
-    } 
-    else // otherwise add allowed bytes num
-    {
-      return;
-    }
-  } 
-  else // first_idx > cur_idx
-  {
-    // store it
-    if (first_index + data.size() < cur_idx_ + cur_avai_cap_) {
+  // storage
+  if (first_index > cur_idx) {
+    // store all data
+    if (first_index + data.size <= cur_idx + avai_cap) {
       container_[first_index] = {first_index, data, is_last_substring};
       total_stored_bytes_ += data.size();
-    } else // otherwise discard
+    } else // otherwise modify bool
     {
-      return;
+      data = data.substr(0, cur_idx + avai_cap - first_index);
+      container_[first_index] = {first_index, data, false};
+      total_stored_bytes_ += data.size();
     }
-    
+
+    return;
+  } 
+
+  // next bytes
+  // remove pushed parts if so
+  if (first_index < cur_idx) {
+    if (first_index + data.size() <= cur_idx) {
+      return;
+    } else {
+      data = data.substr(cur_idx - first_index);
+      first_index = cur_idx; // check for later map erase
+    }
+  }
+
+  // push part
+  string tmp_str;
+  uint64_t i = 0;
+  while (i < avai_cap && i < data.size()) {
+    tmp_str += data[i];
+    i++
+  }
+  tmp_writer.push(tmp_str);
+  cur_idx += tmp_str.size();
+
+  if (is_last_substring) {
+    tmp_writer.close();
+    return;
+  }
+
+  // delete map until entry has unpushed part
+  auto itr = container_.begin();
+  while (itr != container_.end()) {
+    if (itr->second.data.size() + itr->second.first_index <= cur_idx) {
+      auto next = std::next(itr);
+      total_stored_bytes_ -= itr->second.data.size();
+      myMap.erase(itr);
+      itr = next;
+    } else {
+      auto next = std::next(itr);
+      itr = next;
+    }
+  }
+
+  // insert next map entry
+  itr = container_.begin();
+  if (itr != container_.end()) {
+    insert(itr->second.first_index, itr->second.data, itr->second.is_last_substring);
   }
 }
 

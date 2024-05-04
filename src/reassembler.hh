@@ -7,8 +7,7 @@
 
 // define a new struct
 struct reassember_storage_ele {
-  uint64_t first_index = 0;
-  std::string data = "";
+  char st_char = '';
   bool is_last_substring = false;
 };
 

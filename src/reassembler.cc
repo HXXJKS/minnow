@@ -14,38 +14,23 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
   // storage
   if (first_index > cur_idx) {
-
-    cout << "first index " << first_index << endl;
-    cout << endl << "cur idx " << cur_idx << endl;
-
-    
-    // overlapping
-    if (container_.find(first_index) != container_.end()) {
-
-      // if smaller, compare with current store
-      if (first_index + data.size() <= cur_idx + avai_cap) {
-        if (container_[first_index].data.size() < data.size()) {
-          total_stored_bytes_ -= container_[first_index].data.size();
-          total_stored_bytes_ += data.size();
-          container_[first_index].data = data;
-          container_[first_index].is_last_substring = is_last_substring;
-        }
-      } 
-      // otherwise keep original entry
-      return;
-    }
-
     // store all data
     if (first_index + data.size() <= cur_idx + avai_cap) {
-      container_[first_index] = {first_index, data, is_last_substring};
-      cout << "pending 1 " << total_stored_bytes_ << endl;
+      for (uint64_t i=0; i<data.size(); i++) {
+        if (container_.find(data[i]) == container_.end()) {
+          container_[first_index + i] = data[i];
+          total_stored_bytes_++;
+        }
+      }
     } else // otherwise modify bool
     {
-      data = data.substr(0, cur_idx + avai_cap - first_index);
-      container_[first_index] = {first_index, data, false};
-      cout << "pending 2 " << total_stored_bytes_ << endl;
+      for (uint64_t i=0; i<avai_cap; i++) {
+        if (container_.find(data[i]) == container_.end()) {
+          container_[first_index + i] = data[i];
+          total_stored_bytes_++;
+        }
+      }
     }
-    total_stored_bytes_ += data.size();
 
     return;
   } 
@@ -57,7 +42,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       return;
     } else {
       data = data.substr(cur_idx - first_index);
-      //first_index = cur_idx; // check for later map erase
     }
   }
 
@@ -73,37 +57,24 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
   // delete map until entry has unpushed part
   auto itr = container_.begin();
-  while (itr != container_.end()) {
-    if (itr->second.data.size() + itr->second.first_index <= cur_idx) {
-
-      cout << endl << "cur idx " << cur_idx << endl; 
-      cout << "first index " << first_index << endl;
-      cout << "pending " << total_stored_bytes_ << endl;
-      auto prt_itr = container_.begin();
-      while (prt_itr != container_.end()) {
-        cout << "fst idx " << prt_itr->second.first_index << endl;
-        cout << "data " << prt_itr->second.data << endl;
-        cout << "end print" << endl;
-        prt_itr++;
-      } 
-
-      auto next = std::next(itr);
-      total_stored_bytes_ -= itr->second.data.size();
-
-      cout << "pending " << total_stored_bytes_ << endl;
-      container_.erase(itr);
-      itr = next;
-    } else {
-      auto next = std::next(itr);
-      itr = next;
-    }
+  while (itr != container_.end() && itr->first < cur_idx) {
+    auto next = std::next(itr);
+    container_.erase(itr);
+    total_stored_bytes_--;
+    itr = next;
   }
 
-  // insert next map entry
+  // push map until discontinuous
+  tmp_str = "";
   itr = container_.begin();
-  if (itr != container_.end()) {
-    insert(itr->second.first_index, itr->second.data, itr->second.is_last_substring);
+  while (itr != container_.end() && itr->first == cur_idx) {
+    auto next = std::next(itr);
+    tmp_str += itr->second.st_char;
+    total_stored_bytes_--;
+    cur_idx ++;
+    itr = next;
   }
+  tmp_writer.push(tmp_str);
 
   if (is_last_substring) {
     tmp_writer.close();

@@ -57,6 +57,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cur_idx += tmp_str.size();
 
   cout << "cont size " << container_.size() << endl;
+  cout << "total " << total_stored_bytes_ << endl;
 
   // delete map until entry has unpushed part
   auto itr = container_.begin();
@@ -68,6 +69,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   }
 
   cout << "cont size " << container_.size() << endl;
+  cout << "total " << total_stored_bytes_ << endl;
 
   // push map until discontinuous
   tmp_str = "";
@@ -81,6 +83,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   }
 
   cout << "cont size " << container_.size() << endl;
+  cout << "total " << total_stored_bytes_ << endl;
+
 
   tmp_writer.push(tmp_str);
 

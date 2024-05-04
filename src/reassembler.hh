@@ -54,7 +54,7 @@ private:
   ByteStream output_; // the Reassembler writes to this ByteStream
 
   // additional vars
-  uint64_t cur_idx_ = 0;
+  uint64_t cur_idx = 0;
   std::map<uint64_t, reassember_storage_ele> container_;
   uint64_t total_stored_bytes_ = 0;
 };

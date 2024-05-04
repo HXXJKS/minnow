@@ -63,6 +63,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   tmp_writer.push(tmp_str);
   cur_idx += tmp_str.size();
 
+  cout << "cur idx after push " << cur_idx << endl;
+
   cout << "cont size " << container_.size() << endl;
   cout << "total " << total_stored_bytes_ << endl;
   pt_itr = container_.begin();

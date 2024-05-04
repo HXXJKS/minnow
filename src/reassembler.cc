@@ -47,7 +47,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   }
 
   // push part
-  string tmp_str;
+  string tmp_str = "";
   uint64_t i = 0;
   while (i < avai_cap && i < data.size()) {
     tmp_str += data[i];
@@ -55,6 +55,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   }
   tmp_writer.push(tmp_str);
   cur_idx += tmp_str.size();
+
+  cout << "cont size " << container_.size() << endl;
 
   // delete map until entry has unpushed part
   auto itr = container_.begin();
@@ -64,6 +66,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     total_stored_bytes_--;
     itr = next;
   }
+
+  cout << "cont size " << container_.size() << endl;
 
   // push map until discontinuous
   tmp_str = "";
@@ -75,6 +79,9 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     cur_idx ++;
     itr = next;
   }
+
+  cout << "cont size " << container_.size() << endl;
+
   tmp_writer.push(tmp_str);
 
   if (is_last_substring) {

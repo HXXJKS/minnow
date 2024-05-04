@@ -48,11 +48,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   tmp_writer.push(tmp_str);
   cur_idx += tmp_str.size();
 
-  if (is_last_substring) {
-    tmp_writer.close();
-    return;
-  }
-
   // delete map until entry has unpushed part
   auto itr = container_.begin();
   while (itr != container_.end()) {
@@ -65,6 +60,11 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       auto next = std::next(itr);
       itr = next;
     }
+  }
+
+  if (is_last_substring) {
+    tmp_writer.close();
+    return;
   }
 
   // insert next map entry

@@ -55,7 +55,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
       cout << endl << "cur idx " << cur_idx << endl; 
       cout << "first index " << first_index << endl;
-      cout << "delete one" << endl;
+      cout << "pending " << total_stored_bytes_ << endl;
       auto prt_itr = container_.begin();
       while (prt_itr != container_.end()) {
         cout << "fst idx " << prt_itr->second.first_index << endl;
@@ -66,6 +66,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
       auto next = std::next(itr);
       total_stored_bytes_ -= itr->second.data.size();
+
+      cout << "pending " << total_stored_bytes_ << endl;
       container_.erase(itr);
       itr = next;
     } else {

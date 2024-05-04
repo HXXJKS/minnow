@@ -7,7 +7,7 @@
 
 // define a new struct
 struct reassember_storage_ele {
-  char st_char = '';
+  char st_char = '\0';
   bool is_last_substring = false;
 };
 

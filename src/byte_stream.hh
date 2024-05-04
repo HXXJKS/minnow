@@ -4,6 +4,10 @@
 #include <string>
 #include <string_view>
 
+// include queue
+#include <queue>
+#include <iostream>
+
 class Reader;
 class Writer;
 
@@ -25,6 +29,14 @@ protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
   uint64_t capacity_;
   bool error_ {};
+
+  // use a queue to simulate the pipe stream
+  std::queue<char> bytestream_queue_;
+  uint64_t bytes_buffed_ = 0;
+  uint64_t total_bytes_pushed_ = 0;
+  uint64_t total_bytes_popped_ = 0;
+
+  bool end_writer_ = false;
 };
 
 class Writer : public ByteStream

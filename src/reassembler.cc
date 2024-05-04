@@ -42,6 +42,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       return;
     } else {
       data = data.substr(cur_idx - first_index);
+      cout << "data " << data << endl;
     }
   }
 

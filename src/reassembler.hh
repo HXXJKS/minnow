@@ -9,7 +9,7 @@
 struct reassember_storage_ele {
   uint64_t first_index;
   std::string data;
-  bool is_last_substring
+  bool is_last_substring;
 };
 
 class Reassembler

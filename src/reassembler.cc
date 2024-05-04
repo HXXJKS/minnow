@@ -4,12 +4,12 @@ using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
 { 
-  const Writer& reassembler_writer_ = writer();
+  Writer& reassembler_writer_ = output_.writer();
   uint64_t cur_avai_cap_ = reassembler_writer_.available_capacity();
   // next bytes
   if (first_index == cur_idx_) {
     // if data fit into the available capacity
-    if (data_size <= cur_avai_cap_) {
+    if (data.size() <= cur_avai_cap_) {
       // push to buffed zone
       reassembler_writer_.push(data);
       // update cur_idx

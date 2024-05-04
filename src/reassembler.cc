@@ -4,6 +4,8 @@ using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
 { 
+  cout << "start here first " << first_index << " data " << data << endl;
+
 
   Writer& tmp_writer = output_.writer();
   uint64_t avai_cap = tmp_writer.available_capacity();
@@ -69,7 +71,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cout << "total " << total_stored_bytes_ << endl;
   pt_itr = container_.begin();
   while (pt_itr != container_.end()) {
-    cout << "1 first " << pt_itr->first << "char " << pt_itr->second.st_char << endl;
+    cout << "1 first " << pt_itr->first << " char " << pt_itr->second.st_char << endl;
     pt_itr++;
   }
 
@@ -86,7 +88,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cout << "total " << total_stored_bytes_ << endl;
   pt_itr = container_.begin();
   while (pt_itr != container_.end()) {
-    cout << "2 first " << pt_itr->first << "char " << pt_itr->second.st_char << endl;
+    cout << "2 first " << pt_itr->first << " char " << pt_itr->second.st_char << endl;
     pt_itr++;
   }
 
@@ -105,7 +107,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cout << "total " << total_stored_bytes_ << endl;
   pt_itr = container_.begin();
   while (pt_itr != container_.end()) {
-    cout << endl << "3 first " << pt_itr->first << "char " << pt_itr->second.st_char << endl;
+    cout << endl << "3 first " << pt_itr->first << " char " << pt_itr->second.st_char << endl;
     pt_itr++;
   }
 

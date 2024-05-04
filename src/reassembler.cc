@@ -60,6 +60,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       while (prt_itr != container_.end()) {
         cout << "fst idx " << prt_itr->second.first_index << endl;
         cout << "data " << prt_itr->second.data << endl;
+        cout << "end print" << endl;
         prt_itr++;
       } 
 

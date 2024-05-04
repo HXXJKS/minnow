@@ -66,7 +66,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cur_idx += tmp_str.size();
 
   cout << "cur idx after push " << cur_idx << endl;
-
   cout << "cont size " << container_.size() << endl;
   cout << "total " << total_stored_bytes_ << endl;
   pt_itr = container_.begin();
@@ -98,7 +97,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   while (itr != container_.end() && itr->first == cur_idx) {
     auto next = std::next(itr);
     tmp_str += itr->second.st_char;
-    total_stored_bytes_--;
+    container_.erase(itr);
+    total_stored_bytes_ --;
     cur_idx ++;
     itr = next;
   }
@@ -107,7 +107,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cout << "total " << total_stored_bytes_ << endl;
   pt_itr = container_.begin();
   while (pt_itr != container_.end()) {
-    cout << endl << "3 first " << pt_itr->first << " char " << pt_itr->second.st_char << endl;
+    cout << "3 first " << pt_itr->first << " char " << pt_itr->second.st_char << endl;
     pt_itr++;
   }
 

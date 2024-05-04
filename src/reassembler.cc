@@ -43,13 +43,13 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     } else {
       data = data.substr(cur_idx - first_index);
       cout << "data " << data << endl;
-
-      auto pt_itr = container_.begin();
-      while (pt_itr != container_.end()) {
-        cout << "first " << pt_itr->first << endl;
-        cout << "char " << pt_itr->second.st_char << endl;
-      }
     }
+  }
+
+  auto pt_itr = container_.begin();
+  while (pt_itr != container_.end()) {
+    cout << "first " << pt_itr->first << endl;
+    cout << "char " << pt_itr->second.st_char << endl;
   }
 
   // push part

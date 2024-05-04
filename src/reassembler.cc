@@ -3,7 +3,10 @@
 using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
-{
+{ 
+
+  cout << "fst idx " << first_index << endl;
+
   Writer& tmp_writer = output_.writer();
   uint64_t avai_cap = tmp_writer.available_capacity();
   // discard situation

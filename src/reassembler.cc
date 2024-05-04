@@ -73,7 +73,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   }
 
   // delete map until entry has unpushed part
-  itr = container_.begin();
+  auto itr = container_.begin();
   while (itr != container_.end() && itr->first < cur_idx) {
     auto next = std::next(itr);
     container_.erase(itr);

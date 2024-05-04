@@ -19,7 +19,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     // store all data
     if (first_index + data.size() <= cur_idx + avai_cap) {
       for (uint64_t i=0; i<data.size(); i++) {
-        if (container_.find(data[i]) == container_.end()) {
+        // not found
+        if (container_.find(first_index + i) == container_.end()) {
           container_[first_index + i].st_char = data[i];
           if (is_last_substring && i == data.size() - 1) {
             container_[first_index + i].is_last_substring = true;
@@ -30,7 +31,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     } else // otherwise modify bool
     {
       for (uint64_t i=0; i<cur_idx + avai_cap - first_index; i++) {
-        if (container_.find(data[i]) == container_.end()) {
+        if (container_.find(first_index + i) == container_.end()) {
           container_[first_index + i].st_char = data[i];
           if (is_last_substring && i == data.size() - 1) {
             container_[first_index + i].is_last_substring = true;

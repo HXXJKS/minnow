@@ -85,6 +85,34 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     insert(itr->second.first_index, itr->second.data, itr->second.is_last_substring);
   }
 
+  // delete map until entry has unpushed part
+  itr = container_.begin();
+  while (itr != container_.end()) {
+    if (itr->second.data.size() + itr->second.first_index <= cur_idx) {
+
+      /*cout << endl << "cur idx " << cur_idx << endl; 
+      cout << "first index " << first_index << endl;
+      cout << "pending " << total_stored_bytes_ << endl;
+      auto prt_itr = container_.begin();
+      while (prt_itr != container_.end()) {
+        cout << "fst idx " << prt_itr->second.first_index << endl;
+        cout << "data " << prt_itr->second.data << endl;
+        cout << "end print" << endl;
+        prt_itr++;
+      } */
+
+      auto next = std::next(itr);
+      total_stored_bytes_ -= itr->second.data.size();
+
+      cout << "pending " << total_stored_bytes_ << endl;
+      container_.erase(itr);
+      itr = next;
+    } else {
+      auto next = std::next(itr);
+      itr = next;
+    }
+  }
+
   if (is_last_substring) {
     tmp_writer.close();
     return;

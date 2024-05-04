@@ -16,7 +16,9 @@ class Reassembler
 {
 public:
   // Construct Reassembler to write into given ByteStream.
-  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ), container_() {}
+  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ), container_() {
+    reassember_storage_ele initial_element = {0, "", false};
+  }
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.

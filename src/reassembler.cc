@@ -4,6 +4,18 @@ using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
 { 
+
+  // preprocess data to remove pushed part
+  if (first_index < cur_idx_) {
+    if (first_index + data.size() <= cur_idx_) {
+      return;
+    }
+
+    string tmp = data.substr(cur_idx_ - first_index);
+    data = tmp;
+    first_index = cur_idx_;
+  }
+
   Writer& reassembler_writer_ = output_.writer();
   uint64_t cur_avai_cap_ = reassembler_writer_.available_capacity();
   // next bytes
@@ -41,26 +53,22 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
         insert(itr->second.first_index, itr->second.data, itr->second.is_last_substring);
       }
     } 
-    else // otherwise discard
+    else // otherwise add allowed bytes num
     {
       return;
     }
-  } else // other two cases
+  } 
+  else // first_idx > cur_idx
   {
-    // duplicated substring
-    if (first_index < cur_idx_) {
-      return;
-    } else // check whether it fit wihin avai_cap
+    // store it
+    if (first_index + data.size() < cur_idx_ + cur_avai_cap_) {
+      container_[first_index] = {first_index, data, is_last_substring};
+      total_stored_bytes_ += data.size();
+    } else // otherwise discard
     {
-      // store it
-      if (first_index + data.size() < cur_idx_ + cur_avai_cap_) {
-        container_[first_index] = {first_index, data, is_last_substring};
-        total_stored_bytes_ += data.size();
-      } else // otherwise discard
-      {
-        return;
-      }
+      return;
     }
+    
   }
 }
 

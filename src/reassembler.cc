@@ -25,6 +25,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       // if smaller, compare with current store
       if (first_index + data.size() <= cur_idx + avai_cap) {
         if (container_[first_index].data.size() < data.size()) {
+          total_stored_bytes_ -= container_[first_index].data.size();
+          total_stored_bytes_ += data.size();
           container_[first_index].data = data;
           container_[first_index].is_last_substring = is_last_substring;
         }

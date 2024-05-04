@@ -56,4 +56,5 @@ private:
   uint64_t cur_idx = 0;
   std::map<uint64_t, reassember_storage_ele> container_;
   uint64_t total_stored_bytes_ = 0;
+  bool write_from_container_ = false;
 };

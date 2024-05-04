@@ -52,6 +52,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   auto itr = container_.begin();
   while (itr != container_.end()) {
     if (itr->second.data.size() + itr->second.first_index <= cur_idx) {
+      cout << "first index " << first_index << endl;
       cout << "delete one" << endl;
       auto next = std::next(itr);
       total_stored_bytes_ -= itr->second.data.size();

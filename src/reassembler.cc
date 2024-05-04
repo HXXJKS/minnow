@@ -16,6 +16,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   if (first_index > cur_idx) {
 
     cout << "first index " << first_index << endl;
+    cout << endl << "cur idx " << cur_idx << endl;
 
     // store all data
     if (first_index + data.size() <= cur_idx + avai_cap) {

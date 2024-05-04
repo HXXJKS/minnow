@@ -32,7 +32,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       for (uint64_t i=0; i<cur_idx + avai_cap - first_index; i++) {
         if (container_.find(data[i]) == container_.end()) {
           container_[first_index + i].st_char = data[i];
-          if (is_last_substring && i == cur_idx + avai_cap - first_index - 1) {
+          if (is_last_substring && i == data.size() - 1) {
             container_[first_index + i].is_last_substring = true;
           } 
           total_stored_bytes_++;

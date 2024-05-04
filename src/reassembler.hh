@@ -2,6 +2,16 @@
 
 #include "byte_stream.hh"
 
+// include vector as storage container
+#include <map>
+
+// define a new struct
+struct reassember_storage_ele {
+  uint64_t first_index;
+  std::string data;
+  bool is_last_substring
+};
+
 class Reassembler
 {
 public:
@@ -42,4 +52,9 @@ public:
 
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
+
+  // additional vars
+  uint64_t cur_idx_ = 0;
+  std::map<uint64_t, reassember_storage_ele> container_;
+  uint64_t total_stored_bytes_ = 0;
 };

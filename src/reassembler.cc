@@ -102,6 +102,11 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
   cout << "cont size " << container_.size() << endl;
   cout << "total " << total_stored_bytes_ << endl;
+  pt_itr = container_.begin();
+  while (pt_itr != container_.end()) {
+    cout << endl << "3 first " << pt_itr->first << "char " << pt_itr->second.st_char << endl;
+    pt_itr++;
+  }
 
 
   tmp_writer.push(tmp_str);

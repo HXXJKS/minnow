@@ -38,8 +38,14 @@ TCPReceiverMessage TCPReceiver::send() const
   
   // ackno
   if (bool_syn_) {
+
+    cout << "cur+1: " < reassembler().get_ackno() << endl;
+    cout << "zero " << zero_point_.get_raw() << endl;
+
     send_msg.ackno = Wrap32::wrap(reassembler().get_ackno() + 1, zero_point_);
   }
+
+  cout << "ackno: " << send_msg.ackno.get_raw() << endl;
 
   // windows_size
   send_msg.window_size = writer().available_capacity();

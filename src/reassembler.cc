@@ -21,12 +21,12 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     cout << "not reached " << endl;
 
     // if larger replacement
-    if (container.find(first_index) != container.end() && 
-        data.size() > container[first_index].first.size()) {
-      total_stored_bytes_ -= container[first_index].first.size();
-      cout << "1 " << endl;
-    } else { // if smaller, do nothing
-      return;
+    if (container.find(first_index) != container.end() {
+      if (data.size() > container[first_index].first.size()) {
+        total_stored_bytes_ -= container[first_index].first.size();
+      } else {
+        return;
+      }
     }
 
     auto res = container.begin();

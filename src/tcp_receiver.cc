@@ -56,9 +56,9 @@ TCPReceiverMessage TCPReceiver::send() const
   
   // ackno
   if (bool_syn_) {
-
-    cout << "cur: " << reassembler().get_ackno() << endl;
+    
     cout << "zero " << zero_point_.get_raw() << endl;
+    cout << "cur: " << reassembler().get_ackno() << endl;
 
     uint64_t wrap_n = reassembler().get_ackno() + 1;
     if (bool_fin_) {
@@ -66,7 +66,6 @@ TCPReceiverMessage TCPReceiver::send() const
     }
 
     cout << "wrapn " << wrap_n << endl;
-    cout << "zero " << zero_point_.get_raw() << endl;
 
     send_msg.ackno = Wrap32::wrap(wrap_n, zero_point_);
 

@@ -13,8 +13,12 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     return;
   }
 
+  
+
   // storage
   if (first_index > cur_idx) {
+
+    cout << "not reached " << endl;
 
     // if larger replacement
     if (container.find(first_index) != container.end() && 

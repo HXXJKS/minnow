@@ -15,6 +15,15 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
   // storage
   if (first_index > cur_idx) {
+
+    // if larger replacement
+    if (container.find(first_index) != container.end() && 
+        data.size() > container[first_index].first.size()) {
+      total_stored_bytes_ -= container[first_index].first.size();
+    } else { // if smaller, do nothing
+      return;
+    }
+
     auto res = container.begin();
     // store all data
     if (first_index + data.size() <= cur_idx + avai_cap) {

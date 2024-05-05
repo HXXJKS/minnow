@@ -46,7 +46,9 @@ void TCPReceiver::receive( TCPSenderMessage message )
     reassembler_.insert(idx, message.payload, message.FIN);
   }
 
-  bool_fin_ = message.FIN;
+  if (!bool_fin_) {
+    bool_fin_ = message.FIN;
+  }
   bool_reset_ = message.RST;
 }
 

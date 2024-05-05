@@ -4,8 +4,6 @@ using namespace std;
 
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
 {
-  cout << "data " << data << endl;
-
   Writer& tmp_writer = output_.writer();
   uint64_t avai_cap = tmp_writer.available_capacity();
   // discard situation
@@ -18,17 +16,12 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   // storage
   if (first_index > cur_idx) {
 
-    //cout << "not reached " << endl;
-
     // if larger replacement
     if (container.find(first_index) != container.end()) {
       if (data.size() > container[first_index].first.size()) {
         total_stored_bytes_ -= container[first_index].first.size();
         container.erase(first_index);
-        cout << "larger replacement " << endl;
       } else {
-        cout << "smaller detected " << endl;
-        //cout << "pending 1 " << endl;
         return;
       }
     }
@@ -46,18 +39,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
     //update pending bytes
     total_stored_bytes_ += data.size();
-
-    cout << "pending " << endl;
-    cout << "cur " << cur_idx << endl;
-    cout << "container info " << endl;
-    cout << "container size " << container.size() << endl;
-    auto while_ptr = container.begin();
-    while (while_ptr != container.end()) {
-      cout << "first " << while_ptr->first << " second " 
-      << while_ptr->second.first << " " << while_ptr->second.second << endl;
-      while_ptr++;
-    }
-    cout << endl;
     
 
     // two snippets after each store
@@ -68,13 +49,11 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       // all include
       if (first_index + data.size() > next->first + next->second.first.size()) {
         total_stored_bytes_ -= next->second.first.size();
-        //cout << "2 " << endl;
         // direct erase
         container.erase(next);
       }
       else { // partial overlap
         total_stored_bytes_ -= (first_index + data.size() - next->first);
-        //cout << "3 " << endl;
         // merge backwards
         data.resize(next->first-first_index);
         string new_str = data;
@@ -84,19 +63,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
         container.erase(next);
       }
     } // otherwise no backmerge
-    
-
-    cout << "pending 1 " << endl;
-    cout << "cur " << cur_idx << endl;
-    cout << "container info " << endl;
-    cout << "container size " << container.size() << endl;
-    while_ptr = container.begin();
-    while (while_ptr != container.end()) {
-      cout << "first " << while_ptr->first << " second " 
-      << while_ptr->second.first << " " << while_ptr->second.second << endl;
-      while_ptr++;
-    }
-    cout << endl;
 
     // res prev != null, forward merge
     if (res != container.begin()) {
@@ -109,11 +75,9 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
         // all include
         if (prev->first + prev_second.first.size() > first_index + data.size()) {
           total_stored_bytes_ -= data.size();
-          cout << "4 " << endl;
           container.erase(res);
         } else { // partial overlap
           total_stored_bytes_ -= (prev->first + prev_second.first.size() - first_index);
-          cout << "5 " << endl;
 
           // merge with prev
           prev_second.first.resize(first_index-prev->first);
@@ -125,25 +89,12 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       }
     }
 
-    cout << "pending " << endl;
-    cout << "cur " << cur_idx << endl;
-    cout << "container info " << endl;
-    cout << "container size " << container.size() << endl;
-    while_ptr = container.begin();
-    while (while_ptr != container.end()) {
-      cout << "first " << while_ptr->first << " second " 
-      << while_ptr->second.first << " " << while_ptr->second.second << endl;
-      while_ptr++;
-    }
-    cout << endl;
-
     return;
   } 
 
   // push next bytes
   if (first_index < cur_idx) {
     if (first_index + data.size() <= cur_idx) {
-      cout << "already " << endl;
       return;
     } else {
       data = data.substr(cur_idx - first_index);
@@ -192,12 +143,3 @@ uint64_t Reassembler::bytes_pending() const
 {
   return total_stored_bytes_;
 }
-
-// helper printer
-/*cout << endl << "cont size " << container_.size() << endl;
-  cout << "total " << total_stored_bytes_ << endl;
-  pt_itr = container_.begin();
-  while (pt_itr != container_.end()) {
-    cout << "2 first " << pt_itr->first << " char " << pt_itr->second.st_char << endl;
-    pt_itr++;
-  }*/

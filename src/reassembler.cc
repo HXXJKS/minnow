@@ -84,6 +84,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
     // res prev != null, forward merge
     if (res != container.begin()) {
+      cout << "enter prev " << endl;
       auto prev = std::prev(res);
 
       auto prev_second = prev->second;
@@ -92,11 +93,11 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
         // all include
         if (prev->first + prev_second.first.size() > first_index + data.size()) {
           total_stored_bytes_ -= data.size();
-          //cout << "4 " << endl;
+          cout << "4 " << endl;
           container.erase(res);
         } else { // partial overlap
           total_stored_bytes_ -= (prev->first + prev_second.first.size() - first_index);
-          //cout << "5 " << endl;
+          cout << "5 " << endl;
 
           // merge with prev
           prev_second.first.resize(first_index-prev->first);

@@ -29,9 +29,9 @@ void TCPReceiver::receive( TCPSenderMessage message )
     bool_fin_ = message.FIN;
   }
 
-  cout << "input rst " << message.RST << endl;
+
+  // there might be other seterror bypass this portion
   if (message.RST == true) {
-    cout << "never be called" << endl;
     bool_reset_ = true;
     reader().set_error();
   }
@@ -66,7 +66,9 @@ TCPReceiverMessage TCPReceiver::send() const
   }
 
   // RST
-  if(writer().has_error()) send_msg.RST = bool_reset_;
+  if(writer().has_error()) {
+    send_msg.RST = true;
+  }
   
   return send_msg;
 }

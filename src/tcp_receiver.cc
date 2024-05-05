@@ -45,7 +45,7 @@ TCPReceiverMessage TCPReceiver::send() const
     send_msg.ackno = Wrap32::wrap(reassembler().get_ackno() + 1, zero_point_);
   }
 
-  cout << "ackno: " << send_msg.ackno.get_raw() << endl;
+  //cout << "ackno: " << send_msg.ackno.get_raw() << endl;
 
   // windows_size
   send_msg.window_size = writer().available_capacity();

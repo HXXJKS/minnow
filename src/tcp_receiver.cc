@@ -21,6 +21,8 @@ void TCPReceiver::receive( TCPSenderMessage message )
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
 
+    cout << "cur idx " << reassembler().get_ackno() << endl;
+
     reassembler_.insert(idx, message.payload, message.FIN);
 
   } 

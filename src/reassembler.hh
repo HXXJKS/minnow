@@ -45,6 +45,7 @@ public:
   // Access output stream writer, but const-only (can't write from outside)
   const Writer& writer() const { return output_.writer(); }
 
+  // added cur idx accessor
   uint64_t get_ackno() const {return cur_idx;}
 
 private:

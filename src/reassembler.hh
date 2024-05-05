@@ -4,12 +4,8 @@
 
 // include vector as storage container
 #include <map>
-
-// define a new struct
-struct reassember_storage_ele {
-  char st_char = '\0';
-  bool is_last_substring = false;
-};
+#include <utility>
+#include <iterator>
 
 class Reassembler
 {
@@ -54,7 +50,7 @@ private:
 
   // additional vars
   uint64_t cur_idx = 0;
-  std::map<uint64_t, reassember_storage_ele> container_;
+  std::map<uint64_t, std::pair<std::string, bool>> container;
   uint64_t total_stored_bytes_ = 0;
-  bool write_from_container_ = false;
+  bool eof_ = false;
 };

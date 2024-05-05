@@ -64,7 +64,7 @@ TCPReceiverMessage TCPReceiver::send() const
   }
 
   // RST
-  if(writer().has_error()) send_msg.RST = true;
+  if(writer().has_error()) send_msg.RST = bool_reset_;
   
   return send_msg;
 }

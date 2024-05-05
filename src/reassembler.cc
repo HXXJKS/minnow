@@ -79,6 +79,19 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       }
     }
 
+    cout << "stop after " << endl;
+    cout << "container first " << container.begin()->first << endl;
+    cout << "cur " << cur_idx << endl;
+
+    cout << "container info " << endl;
+    auto while_ptr = container.begin();
+    while (while_ptr != container.end()) {
+      cout << "first " << while_ptr->first << " second " 
+      << while_ptr->second.first << " " << while_ptr->second.second << endl;
+      while_ptr++;
+    }
+    cout << endl;
+
     return;
   } 
 
@@ -103,7 +116,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
           last_itr->first <= cur_idx){
 
 
-    cout << "stop after " << endl;
+    /*cout << "stop after " << endl;
     cout << "container first " << container.begin()->first << endl;
     cout << "cur " << cur_idx << endl;
 
@@ -114,7 +127,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       << while_ptr->second.first << " " << while_ptr->second.second << endl;
       while_ptr++;
     }
-    cout << endl;
+    cout << endl;*/
 
 
     // manually push

@@ -70,6 +70,18 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     } // otherwise no backmerge
     
 
+    cout << "pending 1 " << endl;
+    cout << "cur " << cur_idx << endl;
+    cout << "container info " << endl;
+    cout << "container size " << container.size() << endl;
+    auto while_ptr = container.begin();
+    while (while_ptr != container.end()) {
+      cout << "first " << while_ptr->first << " second " 
+      << while_ptr->second.first << " " << while_ptr->second.second << endl;
+      while_ptr++;
+    }
+    cout << endl;
+
     // res prev != null, forward merge
     if (res != container.begin()) {
       auto prev = std::prev(res);

@@ -38,6 +38,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
     //update pending bytes
     total_stored_bytes_ += data.size();
+    cout << "not reached " << endl;
 
     // two snippets after each store
     // if res != end, backward merge

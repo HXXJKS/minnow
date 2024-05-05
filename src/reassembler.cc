@@ -103,7 +103,18 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     cout << "stop after " << endl;
     cout << "container first " << container.begin()->first << endl;
     cout << "cur " << cur_idx << endl;
+
+    cout << "container info " << endl;
+    auto while_ptr = container_.begin();
+    while (while_ptr != container_.end()) {
+      cout << "first " << while_ptr->first << " second " 
+      << while_ptr->second.first << " " << while_ptr->second.second << endl;
+      while_ptr++;
+    }
+
     cout << endl;
+
+
     // manually push
     auto man_itr = container.begin();
     auto tmp_second = man_itr->second;

@@ -29,7 +29,9 @@ void TCPReceiver::receive( TCPSenderMessage message )
     bool_fin_ = message.FIN;
   }
 
+  cout << "input rst " << message.RST << endl;
   if (message.RST == true) {
+    cout << "never be called" << endl;
     bool_reset_ = true;
     reader().set_error();
   }

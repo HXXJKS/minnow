@@ -32,7 +32,7 @@ TCPReceiverMessage TCPReceiver::send() const
   }
 
   // windows_size
-  send_msg.windows_size = reassembler_.output_.available_capacity();
+  //send_msg.window_size = reassembler_.output_.available_capacity();
 
   // RST
   if (bool_reset_) {

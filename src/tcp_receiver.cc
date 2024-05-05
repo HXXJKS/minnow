@@ -49,9 +49,10 @@ void TCPReceiver::receive( TCPSenderMessage message )
   if (!bool_fin_) {
     bool_fin_ = message.FIN;
   }
-  
-  if (!bool_reset_) {
+
+  if (message.RST) {
     bool_reset_ = message.RST;
+    reader().set_error();
   }
 }
 

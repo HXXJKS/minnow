@@ -28,6 +28,12 @@ void TCPReceiver::receive( TCPSenderMessage message )
   else if (bool_syn_) {
 
     cout << "never been here" << endl;
+    cout << "syn " << message.SYN << endl;
+    cout << "fin " << message.FIN << endl;
+    cout << "res " << message.RST << endl;
+    cout << "payload:" << message.payload << endl;
+    cout << "pay size: " << message.payload.size() << endl;
+    cout << "seqno " << message.seqno.get_raw() << endl;
 
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());

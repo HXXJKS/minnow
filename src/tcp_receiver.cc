@@ -45,11 +45,13 @@ TCPReceiverMessage TCPReceiver::send() const
     cout << "cur: " << reassembler().get_ackno() << endl;
     cout << "zero " << zero_point_.get_raw() << endl;
 
-    send_msg.ackno = Wrap32::wrap(reassembler().get_ackno() + 1, zero_point_);
-
+    uint64_t wrap_n = reassembler().get_ackno() + 1;
     if (bool_fin_) {
-      send_msg.ackno = send_msg.ackno + 1;
+      wrap_n += 1;
     }
+
+    send_msg.ackno = Wrap32::wrap(wrap_n, zero_point_);
+
   }
 
   //cout << "ackno: " << send_msg.ackno.get_raw() << endl;

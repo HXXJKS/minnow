@@ -57,7 +57,12 @@ TCPReceiverMessage TCPReceiver::send() const
   //cout << "ackno: " << send_msg.ackno.get_raw() << endl;
 
   // windows_size
-  send_msg.window_size = writer().available_capacity();
+  uint64_t tmp_size = writer().available_capacity();
+  if (tmp_size > static_cast<uint64_t>(UINT16_MAX)) {
+    send_msg.window_size = UINT16_MAX;
+  } else {
+    send_msg.window_size = static_cast<uint16_t>(writer().available_capacity());
+  }
 
   // RST
   send_msg.RST = bool_reset_;

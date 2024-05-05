@@ -20,7 +20,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     } else // otherwise store until avai
     {
       // first > cur
-      data = data.resize(cur_idx + avai_cap - first_index);
+      data.resize(cur_idx + avai_cap - first_index);
       res = container.insert(std::make_pair(first_index, std::make_pair(data, false))).first;
     }
 
@@ -43,7 +43,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
         total_stored_bytes_ -= (first_index + data.size() - next->first);
 
         // merge backwards
-        string new_str = data.resize(next->first-first_index);
+        data.resize(next->first-first_index);
+        string new_str = data;
         new_str += next->second.first;
         bool new_bool = next->second.second;
         res->second = std::make_pair(new_str, new_bool);
@@ -67,7 +68,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
           total_stored_bytes_ -= (prev->first + prev_second.first.size() - first_index);
 
           // merge with prev
-          string new_str = prev_second.first.resize(first_index-prev->first);
+          prev_second.first.resize(first_index-prev->first);
+          string new_str = prev_second.first;
           new_str += data;
           prev->second = std::make_pair(new_str, is_last_substring);
           container.erase(res);
@@ -88,7 +90,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   }
   // exceeds cap
   if (data.size() > avai_cap) {
-    data = data.resize(avai_cap);
+    data.resize(avai_cap);
   } // else push data
   tmp_writer.push(data);
   cur_idx += data.size();

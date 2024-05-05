@@ -20,6 +20,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     if (container.find(first_index) != container.end() && 
         data.size() > container[first_index].first.size()) {
       total_stored_bytes_ -= container[first_index].first.size();
+      cout << "1 " << endl;
     } else { // if smaller, do nothing
       return;
     }
@@ -46,13 +47,13 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       // all include
       if (first_index + data.size() > next->first + next->second.first.size()) {
         total_stored_bytes_ -= next->second.first.size();
-
+        cout << "2 " << endl;
         // direct erase
         container.erase(next);
       }
       else { // partial overlap
         total_stored_bytes_ -= (first_index + data.size() - next->first);
-
+        cout << "3 " << endl;
         // merge backwards
         data.resize(next->first-first_index);
         string new_str = data;
@@ -74,9 +75,11 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
         // all include
         if (prev->first + prev_second.first.size() > first_index + data.size()) {
           total_stored_bytes_ -= data.size();
+          cout << "4 " << endl;
           container.erase(res);
         } else { // partial overlap
           total_stored_bytes_ -= (prev->first + prev_second.first.size() - first_index);
+          cout << "5 " << endl;
 
           // merge with prev
           prev_second.first.resize(first_index-prev->first);

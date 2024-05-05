@@ -12,7 +12,15 @@ Wrap32 Wrap32::wrap( uint64_t n, Wrap32 zero_point )
 uint64_t Wrap32::unwrap( Wrap32 zero_point, uint64_t checkpoint ) const
 {
   Wrap32 wraped_check = wrap(checkpoint, zero_point);
-  uint32_t dis_check_this = raw_value_ - wraped_check.raw_value_;
-  uint64_t converted_dis = static_cast<uint64_t>(dis_check_this);
-  return (checkpoint + converted_dis);
+  // right
+  uint32_t right_dis = raw_value_ - wraped_check.raw_value_;
+
+  // left
+  uint32_t left_dis = wraped_check.raw_value_ - raw_value_;
+
+  if (left_dis <= right_dis) {
+    return (checkpoint - static_cast<uint64_t>(left_dis));
+  }
+
+  return (static_cast<uint64_t>(right_dis) + checkpoint);
 }

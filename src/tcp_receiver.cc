@@ -13,13 +13,13 @@ void TCPReceiver::receive( TCPSenderMessage message )
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
 
-    reassembler().insert(idx, message.payload, message.FIN);
+    reassembler_.insert(idx, message.payload, message.FIN);
   } 
   // if already settled
   else if (bool_syn_) {
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
-    reassembler().insert(idx, message.payload, message.FIN)
+    reassembler_.insert(idx, message.payload, message.FIN);
   }
   bool_reset_ = message.RST;
 }

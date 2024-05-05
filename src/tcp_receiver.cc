@@ -5,14 +5,6 @@ using namespace std;
 void TCPReceiver::receive( TCPSenderMessage message )
 { 
 
-  // helper printer
-  cout << "syn " << message.SYN << endl;
-  cout << "fin " << message.FIN << endl;
-  cout << "res " << message.RST << endl;
-  cout << "payload:" << message.payload << endl;
-  cout << "pay size: " << message.payload.size() << endl;
-  cout << "seqno " << message.seqno.get_raw() << endl;
-
   // if SYN
   if (!bool_syn_ && message.SYN) {
     bool_syn_ = true;
@@ -21,27 +13,14 @@ void TCPReceiver::receive( TCPSenderMessage message )
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
 
-    cout << "cur idx " << reassembler().get_ackno() << endl;
-    cout << "idx " << idx << endl;
-
     reassembler_.insert(idx, message.payload, message.FIN);
 
   } 
   // if already settled
   else if (bool_syn_) {
 
-    cout << "never been here" << endl;
-    /*cout << "syn " << message.SYN << endl;
-    cout << "fin " << message.FIN << endl;
-    cout << "res " << message.RST << endl;*/
-    cout << "payload:" << message.payload << endl;
-    cout << "pay size: " << message.payload.size() << endl;
-    cout << "seqno " << message.seqno.get_raw() << endl;
-
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno()) - 1;
-
-    cout << "idx " << idx << endl;
 
     reassembler_.insert(idx, message.payload, message.FIN);
   }
@@ -62,32 +41,19 @@ TCPReceiverMessage TCPReceiver::send() const
   
   // ackno
   if (bool_syn_) {
-    
-    cout << "zero " << zero_point_.get_raw() << endl;
-    cout << "cur: " << reassembler().get_ackno() << endl;
 
     uint64_t wrap_n = reassembler().get_ackno() + 1;
 
 
-    cout << "binfin " << bool_fin_ << endl;
-    cout << "eof " << reassembler().reassem_eof() << endl;
-
     // fin and the whole string been inserted
     if (bool_fin_ && reassembler().reassem_eof()) {
-
-      cout << "last been here" << endl;
-
       wrap_n += 1;
     }
-
-    cout << "wrapn " << wrap_n << endl;
 
     send_msg.ackno = Wrap32::wrap(wrap_n, zero_point_);
 
 
   }
-
-  //cout << "ackno: " << send_msg.ackno.get_raw() << endl;
 
   // windows_size
   uint64_t tmp_size = writer().available_capacity();

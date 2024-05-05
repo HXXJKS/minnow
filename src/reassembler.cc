@@ -16,12 +16,12 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     auto res = container.begin();
     // store all data
     if (first_index + data.size() <= cur_idx + avai_cap) {
-      res = container.insert(std::make_pair(first_index, std::make_pair(data, is_last_substring)));
+      res = container.insert(std::make_pair(first_index, std::make_pair(data, is_last_substring))).first;
     } else // otherwise store until avai
     {
       // first > cur
       data = data.resize(cur_idx + avai_cap - first_index);
-      res = container.insert(std::make_pair(first_index, std::make_pair(data, false)));
+      res = container.insert(std::make_pair(first_index, std::make_pair(data, false))).first;
     }
 
     //update pending bytes

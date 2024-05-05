@@ -22,6 +22,7 @@ void TCPReceiver::receive( TCPSenderMessage message )
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
 
     reassembler_.insert(idx, message.payload, message.FIN);
+
   } 
   // if already settled
   else if (bool_syn_) {
@@ -29,6 +30,8 @@ void TCPReceiver::receive( TCPSenderMessage message )
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
     reassembler_.insert(idx, message.payload, message.FIN);
   }
+
+  bool_fin_ = message.FIN;
   bool_reset_ = message.RST;
 }
 
@@ -39,10 +42,14 @@ TCPReceiverMessage TCPReceiver::send() const
   // ackno
   if (bool_syn_) {
 
-    cout << "cur+1: " << reassembler().get_ackno() << endl;
+    cout << "cur: " << reassembler().get_ackno() << endl;
     cout << "zero " << zero_point_.get_raw() << endl;
 
     send_msg.ackno = Wrap32::wrap(reassembler().get_ackno() + 1, zero_point_);
+
+    if (bool_fin_) {
+      send_msg.ackno = send_msg.ackno + 1;
+    }
   }
 
   //cout << "ackno: " << send_msg.ackno.get_raw() << endl;

@@ -34,6 +34,6 @@ private:
 
   // bool
   bool bool_syn_ = false;
-  //bool bool_fin_ = false;
+  bool bool_fin_ = false;
   bool bool_reset_ = false;
 };

@@ -122,7 +122,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     if (tmp_second.first.size() + last_itr->first > cur_idx) {
       tmp_second.first = tmp_second.first.substr(cur_idx - last_itr->first);
       tmp_writer.push(tmp_second.first);
-      //cout << "stuck here" << endl;
       cur_idx += tmp_second.first.size();
       if (tmp_second.second) {
         eof_ = true;

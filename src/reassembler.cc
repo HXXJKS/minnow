@@ -101,8 +101,9 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     // manually push
     auto man_itr = container.begin();
     auto tmp_second = man_itr->second;
-    tmp_writer.push(tmp_second.first);
     total_stored_bytes_ -= tmp_second.first.size();
+    tmp_second.first = tmp_second.first.substr(cur_idx - man_itr->first);
+    tmp_writer.push(tmp_second.first);
     cur_idx += tmp_second.first.size();
     if (tmp_second.second) {
       eof_ = true;

@@ -98,7 +98,7 @@ TCPReceiverMessage TCPReceiver::send() const
   }
 
   // RST
-  send_msg.RST = bool_reset_;
+  if(writer().has_error()) send_msg.RST = true;
   
   return send_msg;
 }

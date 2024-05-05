@@ -98,8 +98,11 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cur_idx += data.size();
 
   // delete next map entry
-  while (container.begin() != container.end() && 
-          container.begin()->first <= cur_idx){
+  auto last_itr = container.begin();
+  while (last_itr != container.end() && 
+          last_itr->first <= cur_idx){
+
+
     cout << "stop after " << endl;
     cout << "container first " << container.begin()->first << endl;
     cout << "cur " << cur_idx << endl;
@@ -111,7 +114,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       << while_ptr->second.first << " " << while_ptr->second.second << endl;
       while_ptr++;
     }
-
     cout << endl;
 
 
@@ -126,6 +128,8 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       eof_ = true;
     }
     container.erase(man_itr);
+
+    last_itr++;
   }
   
   // last

@@ -11,14 +11,14 @@ void TCPReceiver::receive( TCPSenderMessage message )
     zero_point_ = seqno;
 
     // transform the index of the insert substring
-    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().cur_idx);
+    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno);
 
     reassember().insert(idx, message.payload, message.FIN)
   } 
   // if already settled
   else if (bool_syn_) {
     // transform the index of the insert substring
-    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().cur_idx);
+    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno);
     reassember().insert(idx, message.payload, message.FIN)
   }
   bool_reset_ = message.RST;
@@ -30,7 +30,7 @@ TCPReceiverMessage TCPReceiver::send() const
   
   // ackno
   if (bool_syn_) {
-    send_msg.ackno = reassembler().cur_idx;
+    send_msg.ackno = reassembler().get_ackno;
   }
 
   // windows_size

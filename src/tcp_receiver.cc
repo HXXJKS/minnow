@@ -39,7 +39,7 @@ void TCPReceiver::receive( TCPSenderMessage message )
     cout << "seqno " << message.seqno.get_raw() << endl;
 
     // transform the index of the insert substring
-    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
+    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno()) - 1;
 
     cout << "idx " << idx << endl;
 

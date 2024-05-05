@@ -61,7 +61,9 @@ TCPReceiverMessage TCPReceiver::send() const
     cout << "cur: " << reassembler().get_ackno() << endl;
 
     uint64_t wrap_n = reassembler().get_ackno() + 1;
-    if (bool_fin_) {
+
+    // fin and the whole string been inserted
+    if (bool_fin_ && reassembler().reassem_eof()) {
       wrap_n += 1;
     }
 

@@ -48,6 +48,8 @@ public:
   // added cur idx accessor
   uint64_t get_ackno() const {return cur_idx;}
 
+  bool reassem_eof() {return eof_ == true;}
+
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
 

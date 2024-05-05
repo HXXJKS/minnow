@@ -11,6 +11,7 @@ Wrap32 Wrap32::wrap( uint64_t n, Wrap32 zero_point )
 
 uint64_t Wrap32::unwrap( Wrap32 zero_point, uint64_t checkpoint ) const
 {
+  
   /*Wrap32 wraped_check = wrap(checkpoint, zero_point);
   // right
   uint32_t right_dis = raw_value_ - wraped_check.raw_value_;
@@ -24,18 +25,10 @@ uint64_t Wrap32::unwrap( Wrap32 zero_point, uint64_t checkpoint ) const
 
   return (static_cast<uint64_t>(right_dis) + checkpoint);*/
 
-  uint64_t diff = checkpoint - raw_value_;
-
-  // Calculate the number of wraps needed to reach the checkpoint
-  uint64_t wraps = diff / (uint64_t(1) << 32);
-
-  // Calculate the absolute sequence number closest to the checkpoint
-  uint64_t absSeqNum = raw_value_ + (wraps * (uint64_t(1) << 32));
-
-  // If the absolute sequence number is greater than the checkpoint, decrement it by 2^32
-  if (absSeqNum > checkpoint) {
-      absSeqNum -= (uint64_t(1) << 32);
+  const uint64_t mod = static_cast<uint64_t>( 1 ) << 32;
+  uint32_t dist = raw_value_ - wrap( checkpoint, zero_point ).raw_value_;
+  if ( dist <= ( static_cast<uint32_t>( 1 ) << 31 ) || checkpoint + dist < mod ) {
+    return dist + checkpoint;
   }
-
-  return absSeqNum;
+  return dist + checkpoint - mod;
 }

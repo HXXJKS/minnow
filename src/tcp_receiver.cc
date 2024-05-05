@@ -64,6 +64,9 @@ TCPReceiverMessage TCPReceiver::send() const
 
     // fin and the whole string been inserted
     if (bool_fin_ && reassembler().reassem_eof()) {
+
+      cout << "last been here" << endl;
+
       wrap_n += 1;
     }
 

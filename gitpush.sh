@@ -1,3 +1,3 @@
 git add .
-git commit -m "check2 test"
+git commit -m "check2 all passed"
 git push

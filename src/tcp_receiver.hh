@@ -29,11 +29,11 @@ private:
   Reassembler reassembler_;
 
   // added member vars
-  Wrap32 receiver_isn_;
-  uint64_t absolute_sqno = 0;
+  Wrap32 zero_point_;
+  // uint64_t absolute_sqno = 0;
 
   // bool
   bool bool_syn_ = false;
-  bool bool_fin_ = false;
+  //bool bool_fin_ = false;
   bool bool_reset_ = false;
 };

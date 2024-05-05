@@ -4,21 +4,23 @@ using namespace std;
 
 void TCPReceiver::receive( TCPSenderMessage message )
 { 
-  bool_fin_ = message.FIN;
 
-  // set ISN
-  if (message.SYN == true && !bool_syn_) {
-    receiver_isn_ = message.seqno;
-    receiver_isn_ = receiver_isn_ + 1;
-    absolute_sqno++;
+  // if SYN
+  if (!bool_syn_ && message.SYN) {
+    bool_syn_ = true;
+    zero_point_ = seqno;
+
+    // transform the index of the insert substring
+    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().cur_idx);
+
+    reassember().insert(idx, message.payload, message.FIN)
   } 
-  // else already started
-  else if (message.SYN == false && bool_syn_) {
-    receiver_isn_ = receiver_isn_ + 1;
-
-    reassembler_.insert(absolute_sqno, message.payload, bool_fin_);
+  // if already settled
+  else if (bool_syn_) {
+    // transform the index of the insert substring
+    uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().cur_idx);
+    reassember().insert(idx, message.payload, message.FIN)
   }
-
   bool_reset_ = message.RST;
 }
 
@@ -28,15 +30,13 @@ TCPReceiverMessage TCPReceiver::send() const
   
   // ackno
   if (bool_syn_) {
-    send_msg.ackno = receiver_isn_;
+    send_msg.ackno = reassembler().cur_idx;
   }
 
   // windows_size
-  //send_msg.window_size = reassembler_.output_.available_capacity();
+  send_msg.window_size = writer().available_capacity();
 
   // RST
-  if (bool_reset_) {
-    send_msg.RST = bool_reset_;
-  } 
+  send_msg.RST = bool_reset_;
   
 }

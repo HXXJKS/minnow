@@ -26,6 +26,9 @@ void TCPReceiver::receive( TCPSenderMessage message )
   } 
   // if already settled
   else if (bool_syn_) {
+
+    cout << "never been here" << endl;
+
     // transform the index of the insert substring
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
     reassembler_.insert(idx, message.payload, message.FIN);

@@ -39,4 +39,5 @@ TCPReceiverMessage TCPReceiver::send() const
   // RST
   send_msg.RST = bool_reset_;
   
+  return send_msg;
 }

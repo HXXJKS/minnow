@@ -120,24 +120,28 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     // manually push
     auto next = std::next(last_itr);
     auto tmp_second = last_itr->second;
-    auto push_str = tmp_second.first;
-    total_stored_bytes_ -= push_str.size();
-    tmp_second.first = tmp_second.first.substr(cur_idx - last_itr->first);
-    tmp_writer.push(tmp_second.first);
-    cout << "stuck here" << endl;
-    cur_idx += tmp_second.first.size();
-    if (tmp_second.second) {
-      eof_ = true;
+    
+    total_stored_bytes_ -= tmp_second.first.size();
+
+    // all include
+    if (tmp_second.first.size() + last_itr->first > cur_idx) {
+      tmp_second.first = tmp_second.first.substr(cur_idx - last_itr->first);
+      tmp_writer.push(tmp_second.first);
+      //cout << "stuck here" << endl;
+      cur_idx += tmp_second.first.size();
+      if (tmp_second.second) {
+        eof_ = true;
+    }
     }
     container.erase(last_itr);
 
-    while_ptr = container.begin();
+    /*while_ptr = container.begin();
     while (while_ptr != container.end()) {
       cout << "first " << while_ptr->first << " second " 
       << while_ptr->second.first << " " << while_ptr->second.second << endl;
       while_ptr++;
     }
-    cout << endl;
+    cout << endl;*/
 
     last_itr = next;
   }

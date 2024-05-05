@@ -22,6 +22,7 @@ void TCPReceiver::receive( TCPSenderMessage message )
     uint64_t idx = message.seqno.unwrap(zero_point_, reassembler().get_ackno());
 
     cout << "cur idx " << reassembler().get_ackno() << endl;
+    cout << "idx " << idx << endl;
 
     reassembler_.insert(idx, message.payload, message.FIN);
 

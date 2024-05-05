@@ -124,6 +124,9 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       tmp_writer.push(tmp_second.first);
       cur_idx += tmp_second.first.size();
       if (tmp_second.second) {
+
+        cout << "changed eof" << endl;
+
         eof_ = true;
     }
     }

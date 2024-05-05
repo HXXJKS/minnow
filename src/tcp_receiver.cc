@@ -30,7 +30,7 @@ TCPReceiverMessage TCPReceiver::send() const
   
   // ackno
   if (bool_syn_) {
-    send_msg.ackno = Wrap32(reassembler().get_ackno() + 1, zero_point_);
+    send_msg.ackno = Wrap32::wrap(reassembler().get_ackno() + 1, zero_point_);
   }
 
   // windows_size

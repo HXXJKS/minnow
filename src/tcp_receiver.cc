@@ -49,7 +49,9 @@ void TCPReceiver::receive( TCPSenderMessage message )
   if (!bool_fin_) {
     bool_fin_ = message.FIN;
   }
-  bool_reset_ = message.RST;
+  if (!bool_fin_) {
+    bool_reset_ = message.RST;
+  }
 }
 
 TCPReceiverMessage TCPReceiver::send() const

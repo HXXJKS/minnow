@@ -128,6 +128,15 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       eof_ = true;
     }
     container.erase(last_itr);
+
+    while_ptr = container.begin();
+    while (while_ptr != container.end()) {
+      cout << "first " << while_ptr->first << " second " 
+      << while_ptr->second.first << " " << while_ptr->second.second << endl;
+      while_ptr++;
+    }
+    cout << endl;
+
     last_itr = next;
   }
   

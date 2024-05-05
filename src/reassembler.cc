@@ -120,7 +120,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     // manually push
     auto next = std::next(last_itr);
     auto tmp_second = last_itr->second;
-    auto push_str = tmp_second.second;
+    auto push_str = tmp_second.first;
     total_stored_bytes_ -= push_str.size();
     tmp_second.first = tmp_second.first.substr(cur_idx - last_itr->first);
     tmp_writer.push(tmp_second.first);

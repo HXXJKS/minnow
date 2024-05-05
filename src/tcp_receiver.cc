@@ -11,6 +11,7 @@ void TCPReceiver::receive( TCPSenderMessage message )
   cout << "res " << message.RST << endl;
   cout << "payload:" << message.payload << endl;
   cout << "pay size: " << message.payload.size() << endl;
+  cout << "seqno " << message.seqno.get_raw() << endl;
 
   // if SYN
   if (!bool_syn_ && message.SYN) {

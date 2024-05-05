@@ -5,11 +5,6 @@ using namespace std;
 void Reassembler::insert( uint64_t first_index, string data, bool is_last_substring )
 {
 
-  cout << endl << "insert call" << endl;
-  cout << "first index " << first_index << endl;
-  cout << "first index " << first_index << endl;
-  cout << endl;
-
   Writer& tmp_writer = output_.writer();
   uint64_t avai_cap = tmp_writer.available_capacity();
   // discard situation
@@ -72,7 +67,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
     // res prev != null, forward merge
     if (res != container.begin()) {
-      cout << "enter prev " << endl;
       auto prev = std::prev(res);
 
       auto prev_second = prev->second;
@@ -130,9 +124,6 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       tmp_writer.push(tmp_second.first);
       cur_idx += tmp_second.first.size();
       if (tmp_second.second) {
-
-        cout << "changed eof" << endl;
-
         eof_ = true;
     }
     }

@@ -65,7 +65,11 @@ TCPReceiverMessage TCPReceiver::send() const
       wrap_n += 1;
     }
 
+    cout << "wrapn " << wrap_n << endl;
+    cout << "zero " << zero_point_.get_raw() << endl;
+
     send_msg.ackno = Wrap32::wrap(wrap_n, zero_point_);
+
 
   }
 

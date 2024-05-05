@@ -6,6 +6,9 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 {
 
   cout << endl << "insert call" << endl;
+  cout << "first index " << first_index << endl;
+  cout << "first index " << first_index << endl;
+  cout << endl;
 
   Writer& tmp_writer = output_.writer();
   uint64_t avai_cap = tmp_writer.available_capacity();
@@ -136,9 +139,10 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
     container.erase(last_itr);
     last_itr = next;
   }
-  
+
   // last
   if (is_last_substring || eof_) {
+    eof_ = true;
     tmp_writer.close();
     return;
   }

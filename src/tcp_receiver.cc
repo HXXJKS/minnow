@@ -5,6 +5,13 @@ using namespace std;
 void TCPReceiver::receive( TCPSenderMessage message )
 { 
 
+  // helper printer
+  cout << "syn " << message.SYN << endl;
+  cout << "fin " << message.FIN << endl;
+  cout << "res " << message.RST << endl;
+  cout << "payload:" << message.payload << endl;
+  cout << "pay size: " << message.payload.size() << endl;
+
   // if SYN
   if (!bool_syn_ && message.SYN) {
     bool_syn_ = true;

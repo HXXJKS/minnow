@@ -96,7 +96,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   cur_idx += data.size();
 
   // delete next map entry
-  while (container.begin != container.end() && 
+  while (container.begin() != container.end() && 
           container.begin()->first <= cur_idx){
     // manually push
     auto man_itr = container.begin();

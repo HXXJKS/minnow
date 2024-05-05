@@ -118,18 +118,17 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
 
 
     // manually push
-    auto man_itr = container.begin();
-    auto tmp_second = man_itr->second;
+    auto next = std::next(last_itr);
+    auto tmp_second = last_itr->second;
     total_stored_bytes_ -= tmp_second.first.size();
-    tmp_second.first = tmp_second.first.substr(cur_idx - man_itr->first);
+    tmp_second.first = tmp_second.first.substr(cur_idx - last_itr->first);
     tmp_writer.push(tmp_second.first);
     cur_idx += tmp_second.first.size();
     if (tmp_second.second) {
       eof_ = true;
     }
-    container.erase(man_itr);
-
-    last_itr++;
+    container.erase(last_itr);
+    last_itr = next;
   }
   
   // last

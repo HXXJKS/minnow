@@ -25,6 +25,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
       if (data.size() > container[first_index].first.size()) {
         total_stored_bytes_ -= container[first_index].first.size();
       } else {
+        cout << "smaller detected " << endl;
         return;
       }
     }
@@ -127,6 +128,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   // push next bytes
   if (first_index < cur_idx) {
     if (first_index + data.size() <= cur_idx) {
+      cout << "already " << endl;
       return;
     } else {
       data = data.substr(cur_idx - first_index);

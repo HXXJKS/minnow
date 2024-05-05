@@ -102,7 +102,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
           // merge with prev
           prev_second.first.resize(first_index-prev->first);
           string new_str = prev_second.first;
-          new_str += data;
+          new_str += res->second.first;
           prev->second = std::make_pair(new_str, is_last_substring);
           container.erase(res);
         }

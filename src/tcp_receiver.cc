@@ -62,6 +62,10 @@ TCPReceiverMessage TCPReceiver::send() const
 
     uint64_t wrap_n = reassembler().get_ackno() + 1;
 
+
+    cout << "binfin " << bool_fin_ << endl;
+    cout << "eof " << reassembler().reassem_eof() << endl;
+
     // fin and the whole string been inserted
     if (bool_fin_ && reassembler().reassem_eof()) {
 

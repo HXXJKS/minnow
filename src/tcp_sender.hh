@@ -16,7 +16,8 @@ class TCPSender
 public:
   /* Construct TCP sender with given default Retransmission Timeout and possible ISN */
   TCPSender( ByteStream&& input, Wrap32 isn, uint64_t initial_RTO_ms )
-    : input_( std::move( input ) ), isn_( isn ), initial_RTO_ms_( initial_RTO_ms )
+    : input_( std::move( input ) ), isn_( isn ), initial_RTO_ms_( initial_RTO_ms ),
+      cur_isn( isn ), outstandings(), cur_RTO( initial_RTO_ms )
   {}
 
   /* Generate an empty TCPSenderMessage */
@@ -43,9 +44,34 @@ public:
   // Access input stream reader, but const-only (can't read from outside)
   const Reader& reader() const { return input_.reader(); }
 
+  // added reader
+  Reader& reader() { return input_.reader(); }
+
 private:
   // Variables initialized in constructor
   ByteStream input_;
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
+
+
+
+  // added variables
+  Wrap32 cur_isn;
+
+  std::queue<TCPSenderMessage> outstandings; // internal storage of outstanding eles
+  uint64_t outstandings_seq_num = 0;
+
+  uint64_t consecutive_count = 0;  // consecutive count
+
+  // timer
+  uint64_t sender_timeline = 0;
+
+  uint64_t cur_timepost = 0;  // current timepost
+  uint64_t cur_RTO = 0;       // current rto interval
+  uint64_t allowed_win_size = 1;  // initial win size
+
+  // bool for SYN and FIN
+  bool input_start = false;
+  bool input_finished = false;
+
 };

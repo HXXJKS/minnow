@@ -42,6 +42,7 @@ void TCPSender::push( const TransmitFunction& transmit )
     outstandings_seq_num++;
   }
 
+
   /*cout << "window size: " << allowed_win_size << endl;
   cout << "reader state: " << reader().has_error() << endl;
   cout << "bytes buffed: " << reader().bytes_buffered() << endl;*/
@@ -57,7 +58,22 @@ void TCPSender::push( const TransmitFunction& transmit )
         }
       }
     } else {
-      msg.FIN = true;
+
+      cout << endl << "im here" << endl << endl;
+
+      cout <<  "out num " << outstandings_seq_num << endl;
+      cout << "popped bytes " << popped_bytes  << endl;
+      cout << "payload size " << tmp_payload << endl;
+      cout << "allowed win size " << allowed_win_size << endl;
+
+      // i++;
+      // make sure the FIN fill in the window
+      if (outstandings_seq_num < allowed_win_size) {
+        msg.FIN = true;
+        popped_bytes++;
+        outstandings_seq_num++;
+      }
+
       break;
     }
     i++;
@@ -70,14 +86,21 @@ void TCPSender::push( const TransmitFunction& transmit )
   cout << "syn " << msg.SYN << endl;
   cout << "fin " << msg.FIN << endl;*/
 
+  cout << "payload:" << tmp_payload << endl;
+  cout << "payloadsize: " << tmp_payload.size() << endl;
+  cout << "syn " << msg.SYN << endl;
+  cout << "fin " << msg.FIN << endl;
+
   // push outstanding only if wefoij
   if (tmp_payload.size() > 0 || msg.SYN || msg.FIN) {
-    if (tmp_payload.size() > 0 || msg.SYN) { 
+    /*if (tmp_payload.size() > 0 || msg.SYN) { 
       outstandings.push(msg);
       //outstandings_seq_num += tmp_payload.size();
 
       //allowed_win_size -= tmp_payload.size();
-    }
+    }*/
+
+    outstandings.push(msg);
     transmit(msg);
   }
   
@@ -170,8 +193,15 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
 
   sender_timeline += ms_since_last_tick;
 
+  cout << "before timepost " << cur_timepost << endl;
+  cout << "ms since last: " << ms_since_last_tick << endl;
+  cout << "cur rto: " << cur_RTO << endl;
+
   // a RTO interval elapsed, transmit the earliest msg
-  if (ms_since_last_tick > cur_RTO) {
+  // if (ms_since_last_tick > cur_RTO) {
+  if (ms_since_last_tick + cur_timepost >= cur_RTO) {
+    cout << "not empty" << !outstandings.empty() << endl;
+
     transmit(outstandings.front());
 
     // if non-zero window size
@@ -187,4 +217,8 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
   {
     cur_timepost += ms_since_last_tick;
   }
+
+  cout << endl << "after timepost " << cur_timepost << endl;
+  cout << "ms since last: " << ms_since_last_tick << endl;
+  cout << "cur rto: " << cur_RTO << endl << endl;
 }

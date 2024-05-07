@@ -60,6 +60,7 @@ void TCPSender::push( const TransmitFunction& transmit )
       // input has buffed bytes
       if (reader().bytes_buffered() > 0) {
         cout << "reader buffed 2 " << reader().bytes_buffered() << endl;
+        cout << "reader popped " << reader().bytes_popped() << endl;
         // make sure the outstanding bytes fill in the window
         if (outstandings_seq_num < allowed_win_size){
           tmp_payload += reader().peek();

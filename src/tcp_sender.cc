@@ -53,10 +53,13 @@ void TCPSender::push( const TransmitFunction& transmit )
 
   cout << "payload size: " << max_payload << endl;
 
+  cout << "reader buffed " << reader().bytes_buffered() << endl;
+
   while (i<max_payload) {
     if (!reader().is_finished()) {
       // input has buffed bytes
       if (reader().bytes_buffered() > 0) {
+        cout << "reader buffed 2 " << reader().bytes_buffered() << endl;
         // make sure the outstanding bytes fill in the window
         if (outstandings_seq_num < allowed_win_size){
           tmp_payload += reader().peek();
@@ -185,6 +188,7 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
         cout << "first raw " << tmp_wrap.get_raw() << endl;
         cout << "msg raw " << msg_wrap.get_raw() << endl;
         cout << "fully acknow: " << (tmp_wrap.get_raw() < msg_wrap.get_raw()) << endl;
+
 
         while (!outstandings.empty() && 
         tmp_wrap.get_raw() <= msg_wrap.get_raw() )

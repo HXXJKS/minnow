@@ -5,7 +5,7 @@ using namespace std;
 
 uint64_t TCPSender::sequence_numbers_in_flight() const
 {
-  return outstandings_seq_num;
+  return bytes_in_flight;
 }
 
 uint64_t TCPSender::consecutive_retransmissions() const
@@ -15,235 +15,245 @@ uint64_t TCPSender::consecutive_retransmissions() const
 
 void TCPSender::push( const TransmitFunction& transmit )
 { 
-
-  cout << endl << "push started" << endl;
+  cout << endl << "push start " << endl;
 
   TCPSenderMessage msg;
-  // SYN processing
+
+  cout << "allowed space " << allowed_space << endl;
+  cout << "window size " << window_size << endl;
+
+  // if receive SYN, start
   if (!input_start) {
     input_start = true;
     msg.SYN = true;
-  }
+    msg.FIN = false;
+    msg.RST = false;
+    msg.seqno = next_seqno;
 
-  // reset processing
-  if (reader().has_error()) {
-    msg.RST = true;
-  } 
+    cout << "add length SYN " << msg.sequence_length() << endl;
 
-  // format string to segment
-  string tmp_payload;
-
-  uint64_t i = 0;
-  uint32_t popped_bytes = 0;
-
-  uint64_t payload_counter = 0;
-
-  // if start, 
-  if (msg.SYN == true) {
-    i++;
-    popped_bytes++;
-    outstandings_seq_num++;
-
-    payload_counter++;
-  }
-
-  cout << "window size " << allowed_win_size << endl;
-
-  uint64_t max_payload = static_cast<uint64_t>(std::min(static_cast<int>(allowed_win_size), 1452));
-
-  cout << "payload size: " << max_payload << endl;
-
-  cout << "reader buffed " << reader().bytes_buffered() << endl;
-
-  while (i<max_payload) {
-    if (!reader().is_finished()) {
-      // input has buffed bytes
-      if (reader().bytes_buffered() > 0) {
-        cout << "reader buffed 2 " << reader().bytes_buffered() << endl;
-        cout << "reader popped " << reader().bytes_popped() << endl;
-        // make sure the outstanding bytes fill in the window
-        if (outstandings_seq_num < allowed_win_size){
-          tmp_payload += reader().peek();
-          reader().pop(1);
-          popped_bytes++;
-          outstandings_seq_num++;
-
-          // handle segments
-          payload_counter++;
-          if (payload_counter == max_payload) {
-
-            msg.seqno = cur_isn;
-            msg.payload = tmp_payload;
-
-            // push to outstandings
-            if ((msg.sequence_length() > 0) && (last_received == false) && !FIN_sent) {
-              cout << "input finished " << input_finished << endl;
-              outstandings.push(msg);
-              transmit(msg);
-            }
-            
-            // reset
-            payload_counter = 0;
-            tmp_payload = "";
-            cur_isn = cur_isn + popped_bytes;
-            popped_bytes = 0;
-
-          }
-        }
-      }
-    } 
-    else // reader finished
-    {
-      cout <<  "out num " << outstandings_seq_num << endl;
-      cout << "popped bytes " << popped_bytes  << endl;
-      cout << "payload size " << tmp_payload << endl;
-      cout << "allowed win size " << allowed_win_size << endl;
-
-      // i++;
-      // make sure the FIN fill in the window
-      if (outstandings_seq_num < allowed_win_size) {
-        msg.FIN = true;
-
-        // first push FIN
-        if (!input_finished) {
-          input_finished = true;
-          popped_bytes++;
-          outstandings_seq_num++;
-        }
-
-        //popped_bytes++;
-        // outstandings_seq_num++;
-      }
-
-      break;
+    // push immediately
+    // wrap up and send
+    msg.seqno = next_seqno;
+    next_seqno = next_seqno + msg.sequence_length();
+    abs_next_seqno += msg.sequence_length();
+    bytes_in_flight += msg.sequence_length();
+    if (input_start) {
+      allowed_space -= msg.sequence_length();
     }
-    i++;
-  }
-  msg.seqno = cur_isn;
-  msg.payload = tmp_payload;
-
-  cout << "payload:" << tmp_payload << endl;
-  cout << "payloadsize: " << tmp_payload.size() << endl;
-  cout << "syn " << msg.SYN << endl;
-  cout << "fin " << msg.FIN << endl;
-
-  // push outstanding only if wefoij
-  // if ((tmp_payload.size() > 0 || msg.SYN || msg.FIN) && (!last_received)) {
-  if ((msg.sequence_length() > 0) && (last_received == false) && !FIN_sent) {
-
-    cout << "input finished " << input_finished << endl;
     outstandings.push(msg);
     transmit(msg);
+
+    return;
   }
 
-  if (input_finished) {
-    FIN_sent = true;
+  // SYN nsent, not acknowledged
+  if (!outstandings.empty() && outstandings.front().SYN) {
+    return;
   }
-  
-  cout << "cur isn " << cur_isn.get_raw() << endl;
 
-  
-  cur_isn = cur_isn + popped_bytes;
+  // input not finished and empty buffer
+  if (!reader().is_finished() && !reader().bytes_buffered()) {
+    return;
+  }
 
-  cout << "cur isn " << cur_isn.get_raw() << endl;
+  // if FIN sent
+  if (FIN_sent) {
+    return;
+  }
 
-  cout << "push finished" << endl;
+  // non-zero window size
+  if (window_size) {
+    cout << "allowed space " << allowed_space << endl;
+    // while to push allowed space
+    while (allowed_space) 
+    {
+      size_t tmp_payload = std::min(TCPConfig::MAX_PAYLOAD_SIZE, reader().bytes_buffered());
+      tmp_payload = std::min(tmp_payload, static_cast<size_t>(allowed_space));
+
+      cout << "next sqno " << next_seqno.get_raw() << endl;
+      
+
+      // read tmp payload off the stream
+      string tmp_str;
+      for (size_t i=0; i<tmp_payload; i++) {
+        tmp_str += reader().peek();
+        reader().pop(1);
+      }
+
+      // FIN included in the payload
+      if (reader().is_finished() && tmp_payload < allowed_space) {
+        msg.FIN = true;
+        FIN_sent = true;
+      }
+
+      // push once as paylods has been reached
+      // wrap up and send
+      cout << "add length while"  << msg.sequence_length() << endl;
+      msg.payload = tmp_str;
+      msg.seqno = next_seqno;
+      next_seqno = next_seqno + msg.sequence_length();
+      abs_next_seqno += msg.sequence_length();
+      bytes_in_flight += msg.sequence_length();
+      if (input_start) {
+        allowed_space -= msg.sequence_length();
+      }
+      outstandings.push(msg);
+      transmit(msg);
+
+      // if empty input
+      if (!reader().bytes_buffered()) {
+        break;
+      }
+      
+    }
+
+    return;
+  }
+  else if (allowed_space == 0) // non-zero
+  {
+    // if finished, FIN
+    if (reader().is_finished()) {
+      msg.FIN = true;
+      input_finished = true;
+    } 
+    else if (reader().bytes_buffered() > 0) // non-empty buffer
+    {
+      string non_zero_str;
+      non_zero_str = reader().peek();
+      reader().pop(1);
+      msg.payload = non_zero_str;
+    }
+  }
+
+
+  cout << "add length end"  << msg.sequence_length() << endl;
+  // wrap up and send
+  msg.seqno = next_seqno;
+  next_seqno = next_seqno + msg.sequence_length();
+  abs_next_seqno += msg.sequence_length();
+  bytes_in_flight += msg.sequence_length();
+  if (input_start) {
+    allowed_space -= msg.sequence_length();
+  }
+  outstandings.push(msg);
+  transmit(msg);
+
+
+  cout << "push finish " << endl;
 }
 
 TCPSenderMessage TCPSender::make_empty_message() const
 {
   TCPSenderMessage msg;
-  msg.seqno = cur_isn;
+  // abs and seqno not updated after return
+  msg.seqno = next_seqno;
   msg.SYN = false;
   msg.FIN = false;
   msg.RST = false;
   msg.payload = "";
-
   return msg;
 }
 
 void TCPSender::receive( const TCPReceiverMessage& msg )
-{ 
-  cout << endl << "receive start" << endl;
+{   
+  cout << endl << "receive start " << endl;
 
-  cout << "received win size: " << msg.window_size << endl;
+  // make sure it has ackno
+  if (msg.ackno.has_value()) {
 
-  allowed_win_size = msg.window_size;
+    cout << "has ackno" << endl;
 
-  // new acknowledged segments
-  if (msg.ackno.has_value() && !outstandings.empty()) {
+    auto ackno_received = msg.ackno.value();  // Wrap32
+    uint64_t abs_ack_received = ackno_received.unwrap(isn_, abs_next_seqno);
 
-    if (!(msg.ackno.value().get_raw() <= outstandings.front().seqno.get_raw())) {
+    // in-flight bytes
+    if (!outstandings.empty()) {
 
-      // reset timing
-      cur_RTO = initial_RTO_ms_;
-      cur_timepost = 0;
-      consecutive_count = 0;
+      cout << "in flight bytes" << endl;
 
-      // pop off fully acknowledged outstandings
-      if (msg.ackno.has_value()) {
-        Wrap32 msg_wrap = msg.ackno.value();
-        Wrap32 tmp_wrap = outstandings.front().seqno + static_cast<uint32_t>(outstandings.front().sequence_length());
+      // ackno smaller than first or larger than next
+      if (abs_ack_received < outstandings.front().seqno.unwrap(isn_, abs_next_seqno) 
+          || abs_ack_received > abs_next_seqno) 
+      {
+        cout << "wrong ackno" << endl;
+        cout << "abs next seqno " << abs_next_seqno << endl;
+        cout << "abs ack no " << abs_ack_received << endl;
+        cout << "front no " << outstandings.front().seqno.unwrap(isn_, abs_next_seqno) << endl;
 
-        cout << "not empty" << !outstandings.empty() << endl;
-        cout << "first raw " << tmp_wrap.get_raw() << endl;
-        cout << "msg raw " << msg_wrap.get_raw() << endl;
-        cout << "fully acknow: " << (tmp_wrap.get_raw() < msg_wrap.get_raw()) << endl;
+        return;
+      }
 
+      // pop off in-flight bytes until not acknowledged
+      while (!outstandings.empty()) {
+        cout << "try delete" << endl;
+        auto tmp_front = outstandings.front();
 
-        while (!outstandings.empty() && 
-        tmp_wrap.get_raw() <= msg_wrap.get_raw() )
-        { 
+        cout << endl;
+        cout << "front abs" << tmp_front.seqno.unwrap(isn_, abs_next_seqno) << endl;
+        cout << "tmp front len " << tmp_front.sequence_length() << endl;
+        cout << "abs ack no " << abs_ack_received << endl;
+        cout << endl;
 
-          if (tmp_wrap.get_raw() == msg_wrap.get_raw() && !last_received && input_finished) {
-            last_received = true;
-          }
+        // front fully acknowledged
+        if (tmp_front.seqno.unwrap(isn_, abs_next_seqno) + tmp_front.sequence_length() <= abs_ack_received) {
 
-          // ackno beyond
-          if (outstandings.size() == 1 && tmp_wrap.get_raw() < msg_wrap.get_raw()) {
-            cout << "thru here" << endl;
-            break;
-          }
+          cout << "pop one" << endl;
 
-          cout << "pop once" << endl;
-          if (outstandings.front().SYN || outstandings.front().FIN) {
-            outstandings_seq_num--;
-          }
-          outstandings_seq_num -= outstandings.front().payload.size();
+          // pop front
+          bytes_in_flight -= tmp_front.sequence_length();
           outstandings.pop();
 
+          // reset timer
+          cur_timepost = 0;
+          cur_RTO = initial_RTO_ms_;
+          consecutive_count = 0;
+        } 
+        else // front not fully acknowledged
+        {
+          cout << "not acked" << endl;
+
+
+          // update window size
+          window_size = msg.window_size;
+          allowed_space = msg.window_size;
           if (!outstandings.empty()) {
-            tmp_wrap = outstandings.front().seqno + static_cast<uint32_t>(outstandings.front().sequence_length());
+            allowed_space = static_cast<uint16_t>(
+              abs_ack_received + window_size - outstandings.front().seqno.unwrap(isn_, abs_next_seqno) - bytes_in_flight
+            );
           }
+
+          return;
         }
+
       }
+    } 
+    else  // empty in-flight bytes
+    {
+      // ackno larger than next
+      if (abs_ack_received > abs_next_seqno) 
+      {
+        return;
+      }
+
     }
-  }
 
-  cout << "cur isn " << cur_isn.get_raw() << endl;
 
-  if (msg.ackno.has_value() && (cur_isn.get_raw() < msg.ackno.value().get_raw())) {
-    /*if (cur_isn.get_raw() + 1 != ) {
+    // update window size
+    window_size = msg.window_size;
+    allowed_space = msg.window_size;
+    if (!outstandings.empty()) {
+      allowed_space = static_cast<uint16_t>(
+        abs_ack_received + window_size - outstandings.front().seqno.unwrap(isn_, abs_next_seqno) - bytes_in_flight
+      );
+    }
+  } // otherwise no ackno
 
-    }*/
-
-    cout << endl << "pluis 1 been here\n" << endl;
-
-    cur_isn = cur_isn + 1;
-  }
-
-  cout << "cur isn " << cur_isn.get_raw() << endl;
-  
-  cout << "fin received" << last_received << endl;
-
-  cout << "receive finished" << endl;
-
+  cout << "receive finish " << endl;
 }
 
 void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& transmit )
 { 
-  //cout << "stuck here 3" << endl;
-  sender_timeline += ms_since_last_tick;
 
   // a RTO interval elapsed, transmit the earliest msg
   // if (ms_since_last_tick > cur_RTO) {
@@ -252,7 +262,7 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
     transmit(outstandings.front());
 
     // if non-zero window size
-    if (allowed_win_size != 0) {
+    if (window_size != 0) {
       consecutive_count++;
       cur_RTO *= 2;
     }

@@ -17,7 +17,7 @@ public:
   /* Construct TCP sender with given default Retransmission Timeout and possible ISN */
   TCPSender( ByteStream&& input, Wrap32 isn, uint64_t initial_RTO_ms )
     : input_( std::move( input ) ), isn_( isn ), initial_RTO_ms_( initial_RTO_ms ),
-      cur_isn( isn ), outstandings(), cur_RTO( initial_RTO_ms )
+      cur_RTO( initial_RTO_ms ), next_seqno ( isn ), outstandings()
   {}
 
   /* Generate an empty TCPSenderMessage */
@@ -53,21 +53,25 @@ private:
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
 
+  
+
   // added variables
-  Wrap32 cur_isn;
-
-  std::queue<TCPSenderMessage> outstandings; // internal storage of outstanding eles
-  uint64_t outstandings_seq_num = 0;
-
-  uint64_t consecutive_count = 0;  // consecutive count
-
-  // timer
-  uint64_t sender_timeline = 0;
-
+  // timer vars
   uint64_t cur_timepost = 0;  // current timepost
   uint64_t cur_RTO = 0;       // current rto interval
-  uint64_t allowed_win_size = 1;  // initial win size
+  uint64_t consecutive_count = 0;  // consecutive count
 
+  // Sender vars
+  uint64_t bytes_in_flight = 0;
+  uint64_t window_size = 1;  // initial win size
+  uint16_t allowed_space = 0; // allowed spots
+
+  // absolute global seq num
+  uint64_t abs_next_seqno = 0;  // absolute next seqno
+  Wrap32 next_seqno;            // next seqno, or checkpoint
+  std::queue<TCPSenderMessage> outstandings; // internal storage of outstanding eles
+
+  // bools for state
   // bool for SYN and FIN
   bool input_start = false;
   bool input_finished = false;

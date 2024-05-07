@@ -53,8 +53,6 @@ private:
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
 
-
-
   // added variables
   Wrap32 cur_isn;
 
@@ -74,4 +72,7 @@ private:
   bool input_start = false;
   bool input_finished = false;
 
+  // record for FIN+1 receiver to prevent further push
+  bool last_received = false;
+  bool FIN_sent = false;
 };

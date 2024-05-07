@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <algorithm>
+
 using namespace std;
 
 int main()

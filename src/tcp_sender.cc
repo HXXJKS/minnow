@@ -22,27 +22,30 @@ void TCPSender::push( const TransmitFunction& transmit )
     return;
   }
 
-  cout << endl << "push start " << endl;
+  // cout << endl << "push start " << endl;
 
   uint64_t cur_window_size = window_size ? window_size : 1;
 
-  cout << "cur win size " << cur_window_size << endl;
-  cout << "bytes in flight " << bytes_in_flight << endl;
+  // cout << "cur win size " << cur_window_size << endl;
+  // cout << "bytes in flight " << bytes_in_flight << endl;
 
+  // make sure window size is not exceeded
   while (cur_window_size > bytes_in_flight) {
     TCPSenderMessage msg;
 
+    // start set
     if (!input_start) {
       msg.SYN = true;
       input_start = true;
     }
 
     msg.seqno = isn_ + abs_next_seqno;
+
     uint16_t payload_size = std::min(TCPConfig::MAX_PAYLOAD_SIZE, cur_window_size - bytes_in_flight - msg.SYN);
     payload_size = std::min(payload_size, static_cast<uint16_t>(reader().bytes_buffered()));
     
-    cout << "payload size " << payload_size << endl;
-    cout << "buffer size " << reader().bytes_buffered() << endl;
+    // cout << "payload size " << payload_size << endl;
+    // cout << "buffer size " << reader().bytes_buffered() << endl;
 
     // take payload size from input stream
     string payload;
@@ -51,8 +54,9 @@ void TCPSender::push( const TransmitFunction& transmit )
       reader().pop(1);
     }
 
-    cout << "output size" << payload.size() << endl;
+    // cout << "output size" << payload.size() << endl;
 
+    // include FIN, otherwise leave FIN to next push
     if (!input_finished && reader().is_finished() 
         && payload.size() + bytes_in_flight + msg.SYN < cur_window_size) {
         msg.FIN = true;
@@ -61,9 +65,9 @@ void TCPSender::push( const TransmitFunction& transmit )
 
     msg.payload = payload;
 
-    // no data, nover send
+    // zero length msg
     if (msg.sequence_length() == 0) {
-      cout << "no data" << endl;
+      // cout << "no data" << endl;
       break;
     }
 
@@ -73,29 +77,30 @@ void TCPSender::push( const TransmitFunction& transmit )
       cur_timepost = 0;
     }
 
+    // push and set sender vars
     transmit(msg);
-
     bytes_in_flight += msg.sequence_length();
     outstandings.push(msg);
     abs_next_seqno += msg.sequence_length();
 
+    // if FIN, quit 
     if (msg.FIN) {
-      cout << "fin" << endl;
+      // cout << "fin" << endl;
       break;
     }
   }
   
-  cout << "push finish " << endl;
+  // cout << "push finish " << endl;
 }
 
 TCPSenderMessage TCPSender::make_empty_message() const
 { 
-  cout << "been called here!" << endl;
+  // cout << "been called here!" << endl;
   TCPSenderMessage msg;
   msg.seqno = isn_ + abs_next_seqno;
   // has error and set RST
   if (reader().has_error()) {
-    cout << "rst set" << endl;
+    // cout << "rst set" << endl;
     msg.RST = true;
   }
   return msg;
@@ -103,7 +108,7 @@ TCPSenderMessage TCPSender::make_empty_message() const
 
 void TCPSender::receive( const TCPReceiverMessage& msg )
 {   
-  cout << endl << "receive start " << endl;
+  // cout << endl << "receive start " << endl;
 
   // ackno exists
   if (msg.ackno.has_value()) {
@@ -138,18 +143,18 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
 
   // set error if needed
   if (msg.RST) {
-    cout << "set an error" << endl;
+    // cout << "set an error" << endl;
     writer().set_error();
   } 
-  cout << "receive finish " << endl;
+  // cout << "receive finish " << endl;
 }
 
 void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& transmit )
 { 
-  cout << "tick start" << endl;
+  // cout << "tick start" << endl;
   cur_timepost += ms_since_last_tick;
   if (cur_timepost >= cur_RTO && !outstandings.empty()) {
-    cout << "retransmit" << endl;
+    // cout << "retransmit" << endl;
     if (window_size > 0) {
       cur_RTO *= 2;
     }
@@ -158,5 +163,5 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
     consecutive_count++;
     transmit(outstandings.front());
   }
-  cout << "tick finish" << endl;
+  // cout << "tick finish" << endl;
 }

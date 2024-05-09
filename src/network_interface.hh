@@ -85,11 +85,10 @@ private:
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
 
-
   // added vars
-  std::queue<std::pair<uint32_t, InternetDatagram>> arp_waiting_queue;
+  std::unordered_map<uint32_t, std::pair<InternetDatagram, size_t>> arp_waiting_queue {};
 
   // Ethernet Address Table
-  std::unordered_map<uint32_t, EthernetAddress> ip_to_ethernet_table;
+  std::unordered_map<uint32_t, std::pair<EthernetAddress, size_t>> ip_to_ethernet_table {};
 
 };

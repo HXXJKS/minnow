@@ -1,3 +1,3 @@
 git add .
-git commit -m "check6 starter pushed"
+git commit -m "check6 all passed"
 git push

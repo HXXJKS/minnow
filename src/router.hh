@@ -8,6 +8,14 @@
 
 #include <map>
 
+#include <array>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
 struct router_entry {
   uint8_t pre_len;
   std::optional<Address> next_hop;
@@ -45,4 +53,21 @@ private:
   std::vector<std::shared_ptr<NetworkInterface>> _interfaces {};
 
   std::vector<std::pair<uint32_t, router_entry>> router_table {};
+
+  /*std::queue<InternetDatagram> datagram_buffer_ {};
+
+  bool match( InternetDatagram& d );
+
+  struct TrieNode
+  {
+    TrieNode() : interface_num(std::nullopt),next_hop(std::nullopt),left(nullptr),right(nullptr) {};
+
+    std::optional<size_t> interface_num;
+    std::optional<Address> next_hop;
+    std::unique_ptr<TrieNode> left;
+    std::unique_ptr<TrieNode> right;
+  };
+
+  std::unique_ptr<TrieNode> root_ {nullptr};*/
+
 };
